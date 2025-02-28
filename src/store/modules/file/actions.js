@@ -64,4 +64,25 @@ export default {
       }
     }
   },
+  async [types.actions.LIST_STATUSES_TODAY]({ commit }) {
+    try {
+      const response = await fileApi.listStatusesToday();
+      commit(types.mutations.SET_STATUSES_TODAY, response.data.data);
+      commit(types.mutations.SET_STATUS, true);
+      commit(types.mutations.SET_RESPONSE_MESSAGES, response.data.message);
+    } catch (error) {
+      commit(types.mutations.SET_STATUS, false);
+      commit(types.mutations.SET_STATUSES_TODAY, []);
+      if (error.message !== 'Network Error') {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, error.response.data.message);
+      } else {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, [
+          {
+            text: 'Error de red',
+            detail: 'Intente conectarse a otra red de internet',
+          },
+        ]);
+      }
+    }
+  },
 };

@@ -8,7 +8,7 @@ import file, { name as fileName } from './file';
 import configuration, { name as configurationName } from './configuration';
 import notification, { name as notificationName } from './notification';
 import report, { name as reportName } from './report';
-import shop, { name as shopName } from './shop';
+import point, { name as pointName } from './point';
 
 export default {
   [homeName]: home,
@@ -21,5 +21,5 @@ export default {
   [configurationName]: configuration,
   [notificationName]: notification,
   [reportName]: report,
-  [shopName]: shop,
+  [pointName]: point,
 };

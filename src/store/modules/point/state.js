@@ -1,6 +1,8 @@
 export default function () {
   return {
-    shops: [],
+    points: [],
     statusAddShop: {},
+    responseMessages: [],
+    status: false,
   };
 }

@@ -75,7 +75,7 @@ const routes = [
       {
         path: '',
         name: 'Convenios',
-        component: () => import('pages/Shop.vue'),
+        component: () => import('src/pages/ApprovedPoints.vue'),
         meta: { permissions: [] },
       },
     ],
@@ -89,6 +89,30 @@ const routes = [
         name: 'Reportes Dinamicos',
         component: () => import('pages/ReportDinamic.vue'),
         meta: { permissions: ['reportsDinamic.list'] },
+      },
+    ],
+  },
+  {
+    path: '/approved-points',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Aprobar progrepuntos',
+        component: () => import('pages/ApprovedPoints.vue'),
+        meta: { permissions: ['approvedPoints.list'] },
+      },
+    ],
+  },
+  {
+    path: '/statuses',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Gestionar estados',
+        component: () => import('pages/Statuses.vue'),
+        meta: { permissions: ['statuses.list'] },
       },
     ],
   },

@@ -11,6 +11,10 @@ export default {
     method: 'POST',
     data,
   }),
+  listStatusesToday: () => http({
+    url: `${process.env.URL_API}/api/file/list-statuses-today`,
+    method: 'GET',
+  }),
   update: (data) => http({
     url: `${process.env.URL_API}/api/file/update/${data.id}`,
     method: 'PUT',
