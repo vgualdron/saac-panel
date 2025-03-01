@@ -63,7 +63,6 @@
     </div>
     <q-table
       v-if="!isLoading"
-      :grid="$q.screen.xs"
       :data="dataTable"
       :columns="columns"
       :filter="filter"
