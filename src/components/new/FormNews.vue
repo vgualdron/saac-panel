@@ -28,10 +28,37 @@
           >
             <q-input
               outlined
+              v-model.trim="user.document_number"
+              label="Numero de documento *"
+              lazy-rules
+              :rules="rules.document_number"
+              :disable="disableInputs"
+              hide-bottom-space
+            />
+            <q-input
+              outlined
               v-model.trim="user.name"
               label="Nombre *"
               lazy-rules
               :rules="rules.name"
+              :disable="disableInputs"
+              hide-bottom-space
+            />
+            <q-input
+              outlined
+              v-model.trim="user.first_lastname"
+              label="Primer apellido *"
+              lazy-rules
+              :rules="rules.first_lastname"
+              :disable="disableInputs"
+              hide-bottom-space
+            />
+            <q-input
+              outlined
+              v-model.trim="user.second_lastname"
+              label="Segundo apellido *"
+              lazy-rules
+              :rules="rules.second_lastname"
               :disable="disableInputs"
               hide-bottom-space
             />
@@ -46,55 +73,6 @@
               hide-bottom-space
               autocomplete="off"
             />
-            <q-input
-              v-if="type !== 'V'"
-              outlined
-              v-model.trim="user.address"
-              label="Dirección *"
-              lazy-rules
-              :rules="rules.address"
-              :disable="disableInputs"
-              hide-bottom-space
-              autocomplete="off"
-            />
-            <q-input
-              v-if="type !== 'V'"
-              outlined
-              v-model.trim="user.occupation"
-              label="Ocupación *"
-              lazy-rules
-              :rules="rules.occupation"
-              :disable="disableInputs"
-              hide-bottom-space
-            />
-            <q-select
-              v-if="type !== 'V'"
-              v-show="showUserSend"
-              v-model="user.userSend"
-              class="q-mt-md"
-              use-input
-              clearable
-              outlined
-              input-debounce="0"
-              label="Enviado por"
-              :disable="disableInputs"
-              :options="optionsUsers"
-              option-label="name"
-              option-value="id"
-              @filter="filterUsers"
-              lazy-rules
-              hide-bottom-space
-              map-options
-              emit-value
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No hay coincidencias
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
             <q-separator />
             <div v-if="type !== 'V'" class="row text-center">
               <q-btn label="cancelar"
@@ -133,32 +111,24 @@ export default {
       optionsUsers: [],
       user: {
         id: null,
-        documentNumber: null,
+        document_number: null,
         name: '',
-        address: '',
+        first_lastname: '',
+        second_lastname: '',
         phone: '',
-        city: null,
-        sector: null,
-        occupation: '',
-        userSend: null,
-        observation: '',
         status: 'borrador',
       },
       copyUser: {
         id: null,
-        documentNumber: null,
+        document_number: null,
         name: '',
-        address: '',
+        first_lastname: '',
+        second_lastname: '',
         phone: '',
-        city: null,
-        sector: null,
-        occupation: '',
-        userSend: null,
-        observation: '',
         status: 'borrador',
       },
       rules: {
-        documentNumber: [
+        document_number: [
           (val) => (!!val) || 'El campo de documento es requerido',
           (val) => (val.length >= 5) || 'El campo debe tener un mínimo de 5 caracteres',
           (val) => (val.length <= 15) || 'El campo debe tener un máximo de 15 caracteres',
@@ -168,24 +138,20 @@ export default {
           (val) => (val.length >= 5) || 'El campo debe tener un mínimo de 5 caracteres',
           (val) => (val.length <= 50) || 'El campo debe tener un máximo de 50 caracteres',
         ],
+        first_lastname: [
+          (val) => (!!val) || 'El campo es requerido',
+          (val) => (val.length >= 2) || 'El campo debe tener un mínimo de 2 caracteres',
+          (val) => (val.length <= 50) || 'El campo debe tener un máximo de 50 caracteres',
+        ],
+        second_lastname: [
+          (val) => (!!val) || 'El campo es requerido',
+          (val) => (val.length >= 2) || 'El campo debe tener un mínimo de 2 caracteres',
+          (val) => (val.length <= 50) || 'El campo debe tener un máximo de 50 caracteres',
+        ],
         phone: [
           (val) => (!!val) || 'El campo es requerido',
           (val) => (val.length >= 5) || 'El campo debe tener un mínimo de 5 caracteres',
           (val) => (val.length <= 15) || 'El campo debe tener un máximo de 15 caracteres',
-        ],
-        address: [
-          (val) => (!!val) || 'El campo es requerido',
-          (val) => (val.length >= 5) || 'El campo debe tener un mínimo de 5 caracteres',
-        ],
-        city: [
-          (val) => (!!val) || 'El campo es requerido',
-        ],
-        sector: [
-          (val) => (!!val) || 'El campo es requerido',
-        ],
-        occupation: [
-          (val) => (!!val) || 'El campo es requerido',
-          (val) => (val.length >= 3) || 'El campo debe tener un mínimo de 3 caracteres',
         ],
       },
     };

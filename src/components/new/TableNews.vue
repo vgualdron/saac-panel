@@ -29,13 +29,13 @@
           title="Click para refrescar la tabla"
           @click="listNewsMounted">
         </q-btn>
-        <q-btn
+        <!-- <q-btn
           color="primary"
           label="Agregar"
           @click="showForm(null, 'C')"
           :disabled="!validatedPermissions.create.status"
           :title="validatedPermissions.create.title"
-        />
+        /> -->
       </div>
     </div>
     <q-table
@@ -252,7 +252,7 @@ export default {
         ...element,
         date: formatDateWithTime(element.date),
         showEdit: element.status === 'borrador',
-        showDelete: element.status === 'borrador',
+        showDelete: !element.user_completed_fields,
         showChangeStatus: element.status === 'borrador',
       }));
       return data;
