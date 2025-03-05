@@ -75,8 +75,8 @@ const routes = [
       {
         path: '',
         name: 'Convenios',
-        component: () => import('src/pages/ApprovedPoints.vue'),
-        meta: { permissions: [] },
+        component: () => import('src/pages/Shop.vue'),
+        meta: { permissions: ['shop.list'] },
       },
     ],
   },

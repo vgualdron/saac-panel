@@ -9,6 +9,7 @@ import configuration, { name as configurationName } from './configuration';
 import notification, { name as notificationName } from './notification';
 import report, { name as reportName } from './report';
 import point, { name as pointName } from './point';
+import shop, { name as shopName } from './shop';
 
 export default {
   [homeName]: home,
@@ -22,4 +23,5 @@ export default {
   [notificationName]: notification,
   [reportName]: report,
   [pointName]: point,
+  [shopName]: shop,
 };
