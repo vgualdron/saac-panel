@@ -1,64 +1,9 @@
 <template>
-  <div class="q-pa-md" justify-center items-center>
+  <div class="q-pa-md text-center" justify-center items-center>
     <div class="justify-center q-mt-sm">
       Bienvenidos ... <br> {{ versionApp }} <br>
-      Mi token push: {{ myTokenPush }} <br>
-      <q-input
-        outlined
-        v-model.trim="userId"
-        label="Token *"
-        hint="Escriba el token"
-        class="q-mt-md"
-        lazy-rules
-        :rules="[val => val && val.length > 0 || 'Este campo es obligatorio']"
-      />
-      <q-input
-        outlined
-        v-model.trim="title"
-        label="Titulo *"
-        hint="Escriba el titulo"
-        class="q-mt-sm"
-        lazy-rules
-        :rules="[val => val && val.length > 0 || 'Este campo es obligatorio']"
-      />
-      <q-input
-        outlined
-        v-model.trim="content"
-        label="Contenido *"
-        hint="Escriba el contenido"
-        class="q-mt-sm"
-        lazy-rules
-        :rules="[val => val && val.length > 0 || 'Este campo es obligatorio']"
-      />
-      <q-input
-        outlined
-        v-model.trim="url"
-        label="URL *"
-        hint="Escriba la url"
-        class="q-mt-sm q-mb-md"
-        lazy-rules
-        :rules="[val => val && val.length > 0 || 'Este campo es obligatorio']"
-      />
     </div>
-    <!-- <q-btn
-      v-if="!subscribed"
-      @click="subscribeToNotifications"
-      label="Subscribirse a las Notificaciones"
-      class="q-ma-sm"/>
-    <q-btn
-      v-else
-      @click="unsubscribeFromNotifications"
-      label="Desubscribirse a las Notificaciones"
-      class="q-ma-sm"/> -->
-    <!-- <q-btn
-      @click="getUser"
-      label="GET USER"
-      class="q-m-sm"/> -->
-    <q-btn
-      @click="sendNotificationPush"
-      label="Send Push Notification"
-      class="q-ma-sm"/>
-    <!-- <div class='onesignal-customlink-container q-mt-md'></div> -->
+    <img src="../../assets/logo-rectangle.png" width="500" class="q-mx-auto q-my-md">
   </div>
 </template>
 <script>

@@ -128,7 +128,7 @@ export default {
   },
   data() {
     return {
-      leftDrawerOpen: false,
+      leftDrawerOpen: true,
       title: 'Inicio',
       showModalChangePassword: false,
       linksData: [],
@@ -140,7 +140,6 @@ export default {
   },
   async mounted() {
     await this.fillLinkData();
-    this.leftDrawerOpen = false;
   },
   computed: {
     ...mapState(commonTypes.PATH, [

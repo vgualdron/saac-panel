@@ -29,13 +29,6 @@
           title="Click para refrescar la tabla"
           @click="listNewsMounted">
         </q-btn>
-        <!-- <q-btn
-          color="primary"
-          label="Agregar"
-          @click="showForm(null, 'C')"
-          :disabled="!validatedPermissions.create.status"
-          :title="validatedPermissions.create.title"
-        /> -->
       </div>
     </div>
     <q-table
@@ -51,49 +44,26 @@
         <q-td :props="props">
           <div>
             <q-btn
-              v-if="props.row.showEdit"
-              color="primary"
-              field="edit"
-              icon="edit"
-              size="xs"
-              :disabled="!validatedPermissions.edit.status"
-              :title="validatedPermissions.edit.title"
-              @click="showForm(props.row, 'E')"
-              round
-            />
-            <q-btn
-              v-if="props.row.showDelete"
+              v-if="props.row.showDelete && !props.row.voucher_id"
               class="q-ml-xs"
               color="red"
               field="delete"
-              icon="delete"
-              size="xs"
+              label="borrar"
+              size="sm"
               :disabled="!validatedPermissions.delete.status"
               :title="validatedPermissions.delete.title"
-              @click="showForm(props.row, 'D')"
-              round
+              @click="remove(props.row)"
             />
             <q-btn
-              v-if="props.row.showChangeStatus"
+              v-if="props.row.showChangeStatus && props.row.voucher_id"
               class="q-ml-xs"
               color="green"
               field="changeStatus"
-              icon="save"
-              size="xs"
+              label="Aprobar pago"
+              size="sm"
               :disabled="!validatedPermissions.changeStatus.status"
               :title="validatedPermissions.changeStatus.title"
-              @click="changeStatus(props.row, 'CS')"
-              round
-            />
-            <q-btn
-              v-if="props.row.status === 'analizando'"
-              class="q-ml-xs"
-              color="primary"
-              field="changeStatus"
-              icon="search"
-              size="xs"
-              @click="showForm(props.row, 'V')"
-              round
+              @click="approve(props.row)"
             />
           </div>
         </q-td>
@@ -105,18 +75,26 @@
           </q-badge>
         </q-td>
       </template>
+      <template v-slot:body-cell-voucher="props">
+        <q-td :props="props">
+          <upload-image
+            :config="{
+              name: 'VOUCHER_AFILIACION',
+              storage: 'news',
+              modelName: 'news',
+              modelId: props.row.id
+            }"
+            @savedFile="savedFile"
+          />
+        </q-td>
+      </template>
     </q-table>
-    <form-news
-      v-if="showModal"
-      v-model="showModal"
-      :type="type"
-      :obj="obj"
-    />
   </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import FormNews from 'components/new/FormNews.vue';
+import UploadImage from 'components/common/UploadImage.vue';
+import commonTypes from '../../store/modules/common/types';
 import newTypes from '../../store/modules/new/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
@@ -125,7 +103,7 @@ import { formatDateWithTime } from '../../helpers/formatDate';
 
 export default {
   components: {
-    FormNews,
+    UploadImage,
   },
   data() {
     return {
@@ -138,6 +116,12 @@ export default {
         {
           name: 'actions',
           label: 'Acciones',
+          align: 'center',
+          visible: false,
+        },
+        {
+          name: 'voucher',
+          label: 'Comprobante',
           align: 'center',
           visible: false,
         },
@@ -241,6 +225,9 @@ export default {
     this.pollData();
   },
   computed: {
+    ...mapState(commonTypes.PATH, [
+      'user',
+    ]),
     ...mapState(newTypes.PATH, [
       'news',
       'responseMessages',
@@ -251,9 +238,9 @@ export default {
       const data = this.news.map((element) => ({
         ...element,
         date: formatDateWithTime(element.date),
-        showEdit: element.status === 'borrador',
-        showDelete: !element.user_completed_fields,
-        showChangeStatus: element.status === 'borrador',
+        showEdit: havePermission('new.edit'),
+        showDelete: havePermission('new.delete'),
+        showChangeStatus: havePermission('new.changeStatus'),
       }));
       return data;
     },
@@ -288,7 +275,8 @@ export default {
   methods: {
     ...mapActions(newTypes.PATH, {
       listNews: newTypes.actions.LIST_NEWS,
-      updateStatusNew: newTypes.actions.UPDATE_STATUS_NEW,
+      completeDataNew: newTypes.actions.COMPLETE_DATA_NEW,
+      deleteNew: newTypes.actions.DELETE_NEW,
     }),
     async pollData() {
       this.polling = setInterval(async () => {
@@ -304,23 +292,75 @@ export default {
       }
       this.$q.loading.hide();
     },
-    async showForm(obj, type) {
-      this.obj = obj;
-      this.type = type;
-      showLoading('Preparando formulario ...', 'Por favor, espere', true);
-      this.showModal = true;
+    async approve(row) {
+      this.$q.dialog({
+        title: 'Aprobar',
+        message: 'Está seguro que desea aprobar inscripcion de asociado?',
+        ok: {
+          push: true,
+        },
+        cancel: {
+          push: true,
+          color: 'negative',
+          text: 'adsa',
+        },
+        persistent: true,
+      }).onOk(async () => {
+        showLoading('Guardando ...', 'Por favor, espere', true);
+        await this.completeDataNew({
+          id: row.id,
+          status: 'aprobado',
+          approved_by: this.user.user_id,
+          approved_date: new Date(),
+        });
+
+        if (this.status === true) {
+          await this.listNewsMounted();
+        }
+        this.$q.loading.hide();
+        this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+      }).onCancel(() => {
+        // console.log('>>>> Cancel')
+      }).onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      });
     },
-    async changeStatus(obj, type) {
-      this.obj = obj;
-      this.type = type;
+    async remove(row) {
+      this.$q.dialog({
+        title: 'Eliminar',
+        message: 'Está seguro que desea eliminar al posible asociado?',
+        ok: {
+          push: true,
+        },
+        cancel: {
+          push: true,
+          color: 'negative',
+          text: 'adsa',
+        },
+        persistent: true,
+      }).onOk(async () => {
+        showLoading('Guardando ...', 'Por favor, espere', true);
+        await this.deleteNew(row.id);
+
+        if (this.status === true) {
+          await this.listNewsMounted();
+        }
+        this.$q.loading.hide();
+        this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+      }).onCancel(() => {
+        // console.log('>>>> Cancel')
+      }).onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      });
+    },
+    async savedFile({ id, modelId }) {
       showLoading('Guardando ...', 'Por favor, espere', true);
-      await this.updateStatusNew({
-        ...obj,
-        status: 'creado',
+      await this.completeDataNew({
+        id: modelId,
+        voucher_id: id,
       });
 
       if (this.status === true) {
-        this.user = { ...this.copyUser };
         await this.listNewsMounted();
       }
       this.$q.loading.hide();

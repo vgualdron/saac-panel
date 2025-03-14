@@ -265,7 +265,7 @@ export default {
         this.showModal = false;
         await this.fetchFile();
         const { id } = this.item;
-        this.$emit('savedFile', { id, name });
+        this.$emit('savedFile', { id, name, modelId });
       }
       this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
     },
