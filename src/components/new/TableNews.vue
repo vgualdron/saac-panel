@@ -207,8 +207,8 @@ export default {
           name: 'date',
           align: 'left',
           label: 'Fecha',
-          field: 'date',
           sortable: true,
+          field: (row) => formatDateWithTime(row.created_at),
           visible: true,
         },
       ],
@@ -237,7 +237,6 @@ export default {
     dataTable() {
       const data = this.news.map((element) => ({
         ...element,
-        date: formatDateWithTime(element.date),
         showEdit: havePermission('new.edit'),
         showDelete: havePermission('new.delete'),
         showChangeStatus: havePermission('new.changeStatus'),

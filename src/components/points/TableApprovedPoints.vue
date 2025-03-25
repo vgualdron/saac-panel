@@ -53,11 +53,22 @@
           <q-td key="file_url" :props="props">
             <a :href="getLink(props.row)" target="_blank" >Abrir</a>
           </q-td>
+          <q-td key="created_at" :props="props">
+            {{ formatDate(props.row.created_at) }}
+          </q-td>
           <q-td key="name" :props="props">
             {{ props.row.name }}
           </q-td>
           <q-td key="shop_name" :props="props">
             {{ props.row.shop_name }}
+          </q-td>
+          <q-td key="observation" :props="props">
+            <q-icon size="xs" name="edit" />
+            {{ (props.row.observation) }}
+            <q-popup-edit :value="props.row.observation" v-slot="scope" buttons
+              @input="val => save('observation', val)">
+              <q-input v-model="scope.value" type="text" dense autofocus />
+            </q-popup-edit>
           </q-td>
           <q-td key="amount" :props="props">
             <q-icon size="xs" name="edit" />
@@ -88,6 +99,7 @@ import { mapState, mapActions } from 'vuex';
 import { showNotifications } from '../../helpers/showNotifications';
 import pointTypes from '../../store/modules/point/types';
 import { showLoading } from '../../helpers/showLoading';
+import { formatDateWithTime } from '../../helpers/formatDate';
 
 export default {
   data() {
@@ -112,6 +124,14 @@ export default {
           sortable: true,
         },
         {
+          name: 'created_at',
+          required: true,
+          label: 'Fecha',
+          align: 'left',
+          field: (row) => row.created_at,
+          sortable: true,
+        },
+        {
           name: 'name',
           required: true,
           label: 'Nombre asociado',
@@ -125,6 +145,14 @@ export default {
           label: 'Comercio',
           align: 'left',
           field: (row) => row.shop_name,
+          sortable: true,
+        },
+        {
+          name: 'observation',
+          required: true,
+          label: 'Observación',
+          align: 'left',
+          field: 'observation',
           sortable: true,
         },
         {
@@ -182,6 +210,9 @@ export default {
     }),
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);
+    },
+    formatDate(date) {
+      return formatDateWithTime(date);
     },
     async getPoints() {
       await this.fetchPoints('pendiente');
