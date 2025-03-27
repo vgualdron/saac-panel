@@ -47,7 +47,7 @@ export default {
     data,
   }),
   completeData: (data) => http({
-    url: `${process.env.URL_API}/api/user/complete-data`,
+    url: `${process.env.URL_API}/api/user/complete-data/${data.id}`,
     method: 'PUT',
     data,
   }),
