@@ -95,6 +95,7 @@
 import { mapState, mapActions } from 'vuex';
 import UploadImage from 'components/common/UploadImage.vue';
 import commonTypes from '../../store/modules/common/types';
+import userTypes from '../../store/modules/user/types';
 import newTypes from '../../store/modules/new/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
@@ -272,6 +273,9 @@ export default {
     clearInterval(this.polling);
   },
   methods: {
+    ...mapActions(userTypes.PATH, {
+      completeData: userTypes.actions.COMPLETE_DATA,
+    }),
     ...mapActions(newTypes.PATH, {
       listNews: newTypes.actions.LIST_NEWS,
       completeDataNew: newTypes.actions.COMPLETE_DATA_NEW,
@@ -311,6 +315,11 @@ export default {
           status: 'aprobado',
           approved_by: this.user.user_id,
           approved_date: new Date(),
+        });
+
+        await this.completeData({
+          id: row.user_id,
+          payment_date: new Date(),
         });
 
         if (this.status === true) {
